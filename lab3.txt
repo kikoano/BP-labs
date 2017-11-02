@@ -1,0 +1,113 @@
+3.1:
+π Eats.pizza
+(
+	(Eats)
+		⨝ Eats.name = Person.name
+	(σ Person.age > 20 ∧ Person.gender = 'female' (Person))
+)
+--------------------------------------------------------------------------------------------
+3.2:
+π Serves.pizzeria 
+(
+	σ Serves.price < 10
+	(
+		(Serves) 
+		⨝ Serves.pizza = Eats.pizza 
+		(
+			(Eats) 
+			⨝ Eats.name = Person.name 
+			(
+				σ Person.name='Amy' ∨ Person.name='Fay' (Person)
+			)
+		)
+	)
+)
+
+---------------------------------------------------------------------------
+3.3:
+π Serves.pizzeria 
+(
+	σ Serves.price < 10
+	(
+		(Serves) ⨝ Serves.pizza = Eats.pizza 
+			(
+				σ cnt = 1 
+				(
+					γ Eats.pizza; count(Eats.pizza) -> cnt
+					(
+						(Eats) ⨝ Eats.name = Person.name 
+						(
+							σ Person.name='Amy' ∨ Person.name='Fay' (Person)
+						)
+					)
+				)
+			)
+	)
+)
+
+-----------------------------------------------------------------
+3.4
+π Person.name
+(
+	(
+		γ Person.name; count(Frequents.pizzeria)->cnt 
+		(
+			(σ Frequents.pizzeria = 'Dominos' (Frequents))
+				⨝ Frequents.name = Person.name
+			(Person)
+		)
+	)
+	⨝ Person.name = Eats.name
+	(
+		(Eats)
+		⨝ Eats.pizza = Serves.pizza
+		(π Serves.pizza (σ Serves.pizzeria = 'Dominos' (Serves)))
+	)
+)
+
+--------------------------------------------------------------------------------------
+3.5
+π Serves.pizzeria
+(
+	(
+		(σ Person.age > 30 (Person))
+			⨝ Person.name = Eats.name
+		(Eats)
+	)
+		⨝ Eats.pizza = Serves.pizza
+	(Serves)
+)
+
+--------------------------------------------------------------------------------
+3.6
+γ max(Person.age)->maxAge
+(
+	(Person)
+		⨝ Person.name = Eats.name
+	(σ Eats.pizza = 'mushroom' (Eats))
+)
+-----------------------------------------------------------------
+3.7
+π Frequents.pizzeria (Frequents)
+-
+π Frequents.pizzeria
+(
+	(σ ¬(Person.gender = 'male') (Person))
+		⨝ Person.name = Frequents.name
+	(Frequents)
+)
+--------------------------------------------------------------
+π Serves.pizzeria
+(
+	(
+		π minprice 
+		(
+			γ min(price)->minprice 
+			(
+				σ Serves.pizza = 'pepperoni' (Serves)
+			)
+		)
+	)
+		⨝ minprice = Serves.price
+	(σ Serves.pizza = 'pepperoni' (Serves))
+)
